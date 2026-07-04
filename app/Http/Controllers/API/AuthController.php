@@ -96,4 +96,27 @@ class AuthController extends Controller
             'message' => 'Lozinka uspesno promenjena.',
         ]);
     }
+    public function forgotPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|string|email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json([
+            'message' => 'Korisnik sa ovim emailom ne postoji.',
+        ], 404);
+    }
+
+    $user->update([
+        'password' => $request->password,
+    ]);
+
+    return response()->json([
+        'message' => 'Lozinka uspesno resetovana.',
+    ]);
+}
 }

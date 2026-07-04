@@ -9,7 +9,7 @@ use App\Http\Controllers\API\ApplicationController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::get('/companies', [CompanyController::class, 'index']);
 Route::get('/companies/{company}', [CompanyController::class, 'show']);
