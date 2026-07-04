@@ -15,5 +15,31 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+         $exceptions->render(function (\Throwable $e, $request) {
+        if ($request->is('api/*') || $request->expectsJson()) {
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return response()->json([
+                    'message' => 'Validaciona greska.',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return response()->json([
+                    'message' => 'Resurs nije pronadjen.',
+                ], 404);
+            }
+
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return response()->json([
+                    'message' => 'Niste autentifikovani.',
+                ], 401);
+            }
+
+            return response()->json([
+                'message' => 'Doslo je do greske.',
+            ], 500);
+        }
+    });
     })->create();
