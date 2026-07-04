@@ -12,7 +12,7 @@ class Company extends Model
         'name',
         'description',
         'website',
-        'adress',
+        'address',
         'user_id',
     ];
 

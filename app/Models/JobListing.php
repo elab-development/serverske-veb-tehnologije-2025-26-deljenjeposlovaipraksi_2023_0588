@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class JobListings extends Model
 {
     use HasFactory;
-    protected $filable=[
-        'tittle',
+    protected $fillable=[
+        'title',
         'description',
         'location',
         'salary',
