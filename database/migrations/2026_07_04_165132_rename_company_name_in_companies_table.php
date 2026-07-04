@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-         $table->renameColumn('company_name', 'name');
+            $table->string('name', 150)->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->renameColumn('name', 'company_name');
+            $table->string('name', 255)->change();
         });
     }
 };
