@@ -15,7 +15,7 @@ Route::get('/companies', [CompanyController::class, 'index']);
 Route::get('/companies/{company}', [CompanyController::class, 'show']);
 Route::get('/job-listings', [JobListingController::class, 'index']);
 Route::get('/job-listings/{jobListing}', [JobListingController::class, 'show']);
-
+Route::get('/job-listings/{jobListing}/salary', [JobListingController::class, 'salaryInCurrency']);
 
 Route::middleware('auth:sanctum')->group(function () {
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\JobListingResource;
 use App\Models\JobListing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class JobListingController extends Controller
 {
@@ -117,4 +118,42 @@ class JobListingController extends Controller
             'message' => 'Oglas obrisan.',
         ]);
     }
+    public function salaryInCurrency(JobListing $jobListing, Request $request)
+{
+    $currency = $request->get('currency', 'EUR');
+
+    try {
+        $response = Http::get('https://open.er-api.com/v6/latest/RSD');
+
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Greska pri dohvatanju kursa.',
+            ], 500);
+        }
+
+        $rates = $response->json('rates');
+
+        if (!isset($rates[$currency])) {
+            return response()->json([
+                'message' => 'Valuta nije podrzana.',
+            ], 422);
+        }
+
+        $convertedSalary = round($jobListing->salary * $rates[$currency], 2);
+
+        return response()->json([
+            'job_listing' => $jobListing->title,
+            'original_salary' => $jobListing->salary,
+            'original_currency' => 'RSD',
+            'converted_salary' => $convertedSalary,
+            'target_currency' => $currency,
+            'exchange_rate' => $rates[$currency],
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Greska pri povezivanju sa servisom.',
+        ], 500);
+    }
+}
 }
