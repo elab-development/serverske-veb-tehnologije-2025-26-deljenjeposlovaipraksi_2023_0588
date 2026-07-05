@@ -146,7 +146,7 @@ class ApplicationController extends Controller
             $app->jobListing->title ?? '',
             $app->jobListing->company->name ?? '',
             $app->status,
-            $app->createdat->format('Y-m-d H:i'),
+            $app->created_at->format('Y-m-d H:i'),
         ];
     }
 
