@@ -30,7 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/job-listings', [JobListingController::class, 'store']);
     Route::put('/job-listings/{jobListing}', [JobListingController::class, 'update']);
     Route::delete('/job-listings/{jobListing}', [JobListingController::class, 'destroy']);
-
+    Route::get('/applications/export/csv', [ApplicationController::class, 'exportCsv']);
+    
     Route::apiResource('applications', ApplicationController::class);
 });
 

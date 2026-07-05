@@ -117,4 +117,54 @@ class ApplicationController extends Controller
             'message' => 'Prijava obrisana.',
         ]);
     }
+    public function exportCsv(Request $request)
+{
+    $user = $request->user();
+
+    if ($user->isAdmin()) {
+        $applications = Application::with('user', 'jobListing.company')->get();
+    } elseif ($user->isEmployer()) {
+        $applications = Application::with('user', 'jobListing.company')
+            ->whereHas('jobListing.company', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->get();
+    } else {
+        $applications = Application::with('jobListing.company')
+            ->where('user_id', $user->id)
+            ->get();
+    }
+
+    $csvHeader = ['ID', 'Korisnik', 'Email', 'Oglas', 'Kompanija', 'Status', 'Datum prijave'];
+    $csvRows = [];
+
+    foreach ($applications as $app) {
+        $csvRows[] = [
+            $app->id,
+            $app->user ? $app->user->name : $user->name,
+            $app->user ? $app->user->email : $user->email,
+            $app->jobListing->title ?? '',
+            $app->jobListing->company->name ?? '',
+            $app->status,
+            $app->createdat->format('Y-m-d H:i'),
+        ];
+    }
+
+    $callback = function () use ($csvHeader, $csvRows) {
+        $file = fopen('php://output', 'w');
+        fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
+        fputcsv($file, $csvHeader);
+        foreach ($csvRows as $row) {
+            fputcsv($file, $row);
+        }
+        fclose($file);
+    };
+
+    $filename = 'prijave' . now()->format('Y_m_d_His') . '.csv';
+
+    return response()->stream($callback, 200, [
+        'Content-Type' => 'text/csv; charset=UTF-8',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ]);
+}
 }
