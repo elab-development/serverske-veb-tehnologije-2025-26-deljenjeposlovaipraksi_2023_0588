@@ -1,59 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Veb aplikacija za deljenje poslova i praksi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Serverska veb aplikacija razvijena u okviru predmeta Serverske veb tehnologije na Fakultetu organizacionih nauka, Univerzitet u Beogradu.
 
-## About Laravel
+## Opis projekta
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+REST API aplikacija namenjena objavljivanju, pretrazi i prijavljivanju na oglase za posao i stručnu praksu. Platforma povezuje kompanije koje imaju otvorene pozicije sa korisnicima koji traže zaposlenje ili priliku za sticanje radnog iskustva.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funkcionalnosti
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Registracija i prijava korisnika sa tri uloge (admin, employer, job_seeker)
+- Autentifikacija putem Laravel Sanctum tokena
+- CRUD operacije za kompanije, oglase i prijave
+- Pretraga i filtriranje oglasa po nazivu, lokaciji, tipu zaposlenja i plati
+- Paginacija rezultata
+- Upload CV dokumenata (PDF, DOC, DOCX)
+- Konverzija plata u različite valute korišćenjem javnog API servisa (open.er-api.com)
+- Eksport prijava u CSV formatu
+- Promena i resetovanje lozinke
+- Kontrola pristupa na osnovu korisničke uloge
+- JSON odgovori za sve rute uključujući obradu grešaka
 
-## Learning Laravel
+## Tehnologije
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Laravel 12
+- Laravel Sanctum
+- SQLite
+- Docker
+- Postman (testiranje)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Pokretanje projekta
 
-## Laravel Sponsors
+### Preduslovi
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Docker Desktop instaliran na računaru
+- Git
 
-### Premium Partners
+### Koraci
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Klonirajte repozitorijum:
+git clone https://github.com/elab-development/serverske-veb-tehnologije-2025-26-deljenjeposlovaipraksi_2023_0588.git
 
-## Contributing
+Pozicionirajte se u backend folder:
+cd serverske-veb-tehnologije-2025-26-deljenjeposlovaipraksi_2023_0588/backend
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Kopirajte .env fajl:
+cp .env.example .env
 
-## Code of Conduct
+Pokrenite Docker kontejnere:
+docker compose up -d
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Instalirajte zavisnosti:
+docker compose exec php composer install
 
-## Security Vulnerabilities
+ Generišite aplikacioni ključ:
+docker compose exec php php artisan key:generate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Pokrenite migracije:
+docker compose exec php php artisan migrate
 
-## License
+Kreirajte storage link:
+docker compose exec php php artisan storage:link
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Aplikacija je dostupna na http://localhost:8000/api
+
+## API rute
+
+### Javne rute
+| Metoda | Endpoint | Opis |
+|--------|----------|------|
+| POST | /api/register | Registracija korisnika |
+| POST | /api/login | Prijava korisnika |
+| POST | /api/forgot-password | Resetovanje lozinke |
+| GET | /api/companies | Pregled kompanija |
+| GET | /api/companies/{id} | Detalji kompanije |
+| GET | /api/job-listings | Pregled oglasa |
+| GET | /api/job-listings/{id} | Detalji oglasa |
+| GET | /api/job-listings/{id}/salary | Konverzija plate |
+
+### Zaštićene rute (potreban Bearer token)
+| Metoda | Endpoint | Opis |
+|--------|----------|------|
+| POST | /api/logout | Odjava |
+| GET | /api/user | Podaci ulogovanog korisnika |
+| PUT | /api/change-password | Promena lozinke |
+| POST | /api/companies | Kreiranje kompanije |
+| PUT | /api/companies/{id} | Izmena kompanije |
+| DELETE | /api/companies/{id} | Brisanje kompanije |
+| POST | /api/job-listings | Kreiranje oglasa |
+| PUT | /api/job-listings/{id} | Izmena oglasa |
+| DELETE | /api/job-listings/{id} | Brisanje oglasa |
+| GET | /api/applications | Pregled prijava |
+| POST | /api/applications | Kreiranje prijave |
+| GET | /api/applications/{id} | Detalji prijave |
+| PUT | /api/applications/{id} | Izmena statusa prijave |
+| DELETE | /api/applications/{id} | Brisanje prijave |
+| GET | /api/applications/export/csv | Eksport prijava u CSV |
+
+## Autori
+
+- Filip Ilić 2023/0588
+- Strahinja Babić 2023/0237
